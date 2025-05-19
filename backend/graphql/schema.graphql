@@ -77,3 +77,16 @@ type Laboratory {
   created_at: DateTime!
   updated_at: DateTime!
 }
+
+type Mutation {
+  login(email: String!, password: String!): AuthPayload
+    @field(resolver: "App\\GraphQL\\Mutations\\Login")
+
+  logout: Boolean @auth @field(resolver: "App\\GraphQL\\Mutations\\Logout")
+}
+
+type AuthPayload {
+  access_token: String
+  token_type: String
+  user: User
+}
