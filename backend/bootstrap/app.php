@@ -11,7 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Middleware CORS
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+
+        // Exclure GraphQL de la vérification CSRF
+        $middleware->validateCsrfTokens(except: [
+            'graphql',
+            'graphql/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
