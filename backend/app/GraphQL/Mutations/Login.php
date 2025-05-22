@@ -9,7 +9,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class Login
 {
-    public function __invoke(null $_, array $args, GraphQLContext $context): array
+    public function __invoke($_, array $args, GraphQLContext $context): array
     {
         $credentials = [
             'email' => $args['email'],
