@@ -1,47 +1,34 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50">
-      <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        <!-- Logo -->
-        <div class="text-center">
-          <div class="flex justify-center">
-            <div class="w-20 h-20 rounded-full bg-[#1A7350] flex items-center justify-center">
-              <span class="text-white text-xl font-bold">U</span>
-            </div>
-          </div>
-          <h2 class="mt-4 text-3xl font-extrabold text-gray-900">UBAQ Compliance</h2>
-          <p class="mt-2 text-sm text-gray-600">Connectez-vous à votre espace</p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-[#1A7350]">UBAQ Compliance</h2>
+        <p class="text-gray-600">Connectez-vous à votre compte</p>
+      </div>
+      
+      <form @submit.prevent="handleLogin" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            v-model="email"
+            type="email"
+            id="email"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1A7350]"
+            required
+          >
         </div>
         
-        <!-- Login Form -->
-        <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-          <div class="rounded-md shadow-sm space-y-4">
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                id="email"
-                v-model="email"
-                name="email"
-                type="email"
-                required
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#1A7350] focus:border-[#1A7350]"
-                placeholder="Adresse email"
-              />
-            </div>
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-              <input
-                id="password"
-                v-model="password"
-                name="password"
-                type="password"
-                required
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#1A7350] focus:border-[#1A7350]"
-                placeholder="Mot de passe"
-              />
-            </div>
-          </div>
-  
-          <div class="flex items-center justify-between">
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+          <input
+            v-model="password"
+            type="password"
+            id="password"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1A7350]"
+            required
+          >
+        </div>
+        <div class="flex items-center justify-between">
             <div class="flex items-center">
               <input
                 id="remember-me"
@@ -60,69 +47,74 @@
               </a>
             </div>
           </div>
-  
-          <div>
-            <button
-              type="submit"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1A7350] hover:bg-[#116340] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1A7350]"
-              :disabled="loading"
-            >
-              <span v-if="loading">Connexion en cours...</span>
-              <span v-else>Se connecter</span>
-            </button>
-          </div>
-          
-          <div v-if="errorMessage" class="bg-red-50 border border-red-200 text-red-800 text-sm rounded-md p-3">
-            {{ errorMessage }}
-          </div>
-        </form>
-      </div>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  
-  const router = useRouter();
-  const email = ref('');
-  const password = ref('');
-  const loading = ref(false);
-  const errorMessage = ref('');
-  
-  // Mock user credentials for development
-  const mockUsers = [
-    { email: 'admin@ubaq.com', password: 'admin123', role: 'admin' },
-    { email: 'compliance@ubaq.com', password: 'compliance123', role: 'compliance_officer' },
-    { email: 'user@ubaq.com', password: 'user123', role: 'user' }
-  ];
-  
-  const handleLogin = () => {
-    loading.value = true;
-    errorMessage.value = '';
-    
-    // Simulate API request delay
-    setTimeout(() => {
-      // Find user with matching credentials
-      const user = mockUsers.find(
-        u => u.email === email.value && u.password === password.value
-      );
-      
-      if (user) {
-        // Store token and user info in localStorage (for mock auth)
-        localStorage.setItem('token', 'mock-jwt-token');
-        localStorage.setItem('user', JSON.stringify({
-          email: user.email,
-          role: user.role
-        }));
         
-        // Redirect to dashboard
-        router.push('/dashboard');
-      } else {
-        errorMessage.value = 'Email ou mot de passe incorrect';
+        <div v-if="authService.error.value" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {{ authService.error.value }}
+
+        </div>
+        
+        <button
+          type="submit"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1A7350] hover:bg-[#116340] focus:outline-none"
+          :disabled="authService.loading.value"
+        >
+          <LoadingSpinner v-if="authService.loading.value" class="h-5 w-5 mr-2" />
+          {{ authService.loading.value ? 'Connexion en cours...' : 'Se connecter' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { authService } from '../services/auth.service'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+
+// Mock user credentials pour les tests (fallback)
+const mockUsers = [
+  { email: 'admin@ubaq.com', password: 'admin123', role: 'admin', name: 'Admin User', id: 1 },
+  { email: 'compliance@ubaq.com', password: 'compliance123', role: 'compliance', name: 'Compliance Officer', id: 2 },
+  { email: 'user@ubaq.com', password: 'user123', role: 'user', name: 'Standard User', id: 3 }
+]
+
+async function handleLogin() {
+  try {
+    // Tentative d'authentification via votre service GraphQL
+    const success = await authService.login(email.value, password.value)
+    
+    if (success) {
+      window.location.href = '/dashboard'
+    }
+  } catch (err) {
+    console.error('Erreur GraphQL, utilisation des mocks:', err)
+    
+    // Fallback vers les données mockées si GraphQL échoue
+    const user = mockUsers.find(
+      u => u.email === email.value && u.password === password.value
+    )
+    
+    if (user) {
+      // Simuler le succès avec les données mockées
+      authService.user.value = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
       }
+      authService.isAuthenticated.value = true
+      authService.error.value = null
+      localStorage.setItem('user', JSON.stringify(authService.user.value))
       
-      loading.value = false;
-    }, 1000);
-  };
-  </script>
+      router.push({ name: 'dashboard' })
+    } else {
+      authService.error.value = 'Email ou mot de passe incorrect'
+    }
+  }
+}
+</script>
