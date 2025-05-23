@@ -37,8 +37,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import SideNavigation from '@/components/SideNavigation.vue';
-import LoadingSpinner from '@/components/LoadingSpinner.vue';
+import SideNavigation from '../components/SideNavigation.vue';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const router = useRouter();
 const isLoading = ref(false);
