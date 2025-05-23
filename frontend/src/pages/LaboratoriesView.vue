@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <MainLayout>
+  
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Laboratoires</h1>
     
     <!-- Filtres -->
@@ -86,12 +87,13 @@
         </table>
       </div>
     </div>
-  </div>
+ 
+</MainLayout>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import MainLayout from '../components/MainLayout.vue';
 // Mock laboratories data
 const laboratories = ref([
   {

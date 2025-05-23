@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <MainLayout>
+  
     <div class="mb-6 flex items-center justify-between">
       <div class="flex items-center">
         <button @click="goBack" class="mr-3 text-gray-500">
@@ -130,13 +131,14 @@
         </button>
       </div>
     </div>
-  </div>
+  
+</MainLayout>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+import MainLayout from '../components/MainLayout.vue';
 const router = useRouter();
 
 // Mock event data
