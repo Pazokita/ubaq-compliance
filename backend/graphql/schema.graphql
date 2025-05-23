@@ -11,22 +11,54 @@ type Query {
     name: String @where(operator: "like")
   ): [User!]! @paginate(defaultCount: 10)
 
-  events: [Event!]! @all
+  events(
+    search: String @scope(name: "search")
+    status: String @where(operator: "eq")
+    type: String @where(operator: "eq")
+  ): [Event!]! @all
+  
+  event(id: ID! @eq): Event @find
+
   doctors: [Doctor!]! @all
   laboratories: [Laboratory!]! @all
 }
 
 type Mutation {
+  # Authentification
+  login(email: String!, password: String!): AuthPayload
+    @field(resolver: "App\\GraphQL\\Mutations\\Login")
+
+  logout: Boolean @field(resolver: "App\\GraphQL\\Mutations\\Logout")
+
+  # Événements
   createEvent(
     title: String!
     date: Date!
     location: String!
+    type: String!
+    description: String
     budget_allocated: Float!
     budget_used: Float
     doctor_id: ID!
     laboratory_id: ID!
+    document_url: String
   ): Event! @create
 
+  updateEvent(
+    id: ID!
+    input: UpdateEventInput!
+  ): Event! @field(resolver: "App\\GraphQL\\Mutations\\UpdateEvent")
+
+  deleteEvent(id: ID!): Boolean! 
+    @field(resolver: "App\\GraphQL\\Mutations\\DeleteEvent")
+
+  validateEvent(
+    id: ID!
+    action: ValidationAction!
+    comment: String
+  ): Event! @field(resolver: "App\\GraphQL\\Mutations\\ValidateEvent")
+
+  # Médecins et laboratoires
   createDoctor(
     first_name: String!
     last_name: String!
@@ -37,6 +69,43 @@ type Mutation {
     name: String!
     city: String
   ): Laboratory! @create
+}
+
+input UpdateEventInput {
+  title: String
+  date: Date
+  location: String
+  type: String
+  description: String
+  budget_allocated: Float
+  budget_used: Float
+  doctor_id: ID
+  laboratory_id: ID
+  document_url: String
+}
+
+enum ValidationAction {
+  VALIDATE @enum(value: "validate")
+  REJECT @enum(value: "reject")
+  REQUEST_MODIFICATION @enum(value: "request_modification")
+}
+
+enum EventStatus {
+  PENDING @enum(value: "pending")
+  FIRST_VALIDATION @enum(value: "first_validation")
+  SECOND_VALIDATION @enum(value: "second_validation")
+  TO_MODIFY @enum(value: "to_modify")
+  IN_SUBMISSION @enum(value: "in_submission")
+  IN_PROGRESS @enum(value: "in_progress")
+  REJECTED @enum(value: "rejected")
+}
+
+enum EventType {
+  CONFERENCE @enum(value: "conference")
+  WORKSHOP @enum(value: "workshop")
+  FORMATION @enum(value: "formation")
+  SEMINAR @enum(value: "seminar")
+  PRESENTATION @enum(value: "presentation")
 }
 
 type User {
@@ -54,10 +123,18 @@ type Event {
   title: String!
   date: Date!
   location: String!
+  type: String!
+  description: String
+  status: String!
   budget_allocated: Float!
   budget_used: Float!
+  document_url: String
+  validation_comment: String
+  validated_by: ID
+  validated_at: DateTime
   doctor: Doctor! @belongsTo
   laboratory: Laboratory! @belongsTo
+  validator: User @belongsTo(relation: "validator")
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -66,6 +143,7 @@ type Doctor {
   id: ID!
   first_name: String!
   last_name: String!
+  name: String! @field(resolver: "App\\GraphQL\\Resolvers\\DoctorResolver@name")
   specialty: String
   created_at: DateTime!
   updated_at: DateTime!
@@ -77,13 +155,6 @@ type Laboratory {
   city: String
   created_at: DateTime!
   updated_at: DateTime!
-}
-
-type Mutation {
-  login(email: String!, password: String!): AuthPayload
-    @field(resolver: "App\\GraphQL\\Mutations\\Login")
-
-  logout: Boolean @auth @field(resolver: "App\\GraphQL\\Mutations\\Logout")
 }
 
 type AuthPayload {
