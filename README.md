@@ -46,43 +46,48 @@ UBAQ Compliance est une application fullstack permettant de suivre les événeme
 ### ✅ Types personnalisés
 
 ```graphql
-scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Date @scalar(class: "Nuwave\Lighthouse\Schema\Types\Scalars\Date")
+scalar DateTime @scalar(class: "Nuwave\Lighthouse\Schema\Types\Scalars\DateTime")
+```
 
----
+### 📊 Queries
 
-## 📊 Queries
-```user(id: ID, email: String): User @find
+```graphql
+user(id: ID, email: String): User @find
 users(name: String): [User!]! @paginate
 events: [Event!]! @all
 doctors: [Doctor!]! @all
 laboratories: [Laboratory!]! @all
 ```
----
 
-## ✍️ Mutations
-```createEvent(...) @create
+### ✍️ Mutations
+
+```graphql
+createEvent(...) @create
 createDoctor(...) @create
 createLaboratory(...) @create
 login(email: String!, password: String!): AuthPayload @field(resolver: ...)
 logout: Boolean @auth
 ```
+
 ---
 
 ## 🚧 Fonctionnalités actuelles
 
-	•	✅ Connexion utilisateur avec token JWT
-	•	✅ Dashboard des événements (lecture via query)
-	•	⏳ Création d’événement (mutation présente, UI à compléter)
-	•	⏳ Suppression d’événement (non implémentée)
-	•	⏳ Statuts de validation (pending, validated, rejected) non implémentés
-```
+- ✅ Connexion utilisateur avec token JWT
+- ✅ Dashboard des événements (lecture via query)
+- ⏳ Création d’événement (mutation présente, UI à compléter)
+- ⏳ Suppression d’événement (non implémentée)
+- ⏳ Statuts de validation (`pending`, `validated`, `rejected`) non implémentés
+
 ---
 
 ## 🛠 Installation
 
-1. Backend (Laravel)
-```cd backend
+### 1. Backend (Laravel)
+
+```bash
+cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -90,15 +95,20 @@ php artisan migrate
 php artisan serve
 ```
 
-2. Frontend (Vue 3)
-```cd frontend
+### 2. Frontend (Vue 3)
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
+
 ---
 
 ## 📁 Structure du projet
-```backend/
+
+```txt
+backend/
 ├── app/GraphQL/Mutations/
 ├── app/Models/
 ├── config/lighthouse.php
@@ -118,9 +128,11 @@ frontend/
 ├── src/lib/apollo.ts
 └── src/services/auth.service.ts
 ```
+
 ---
 
-##🧪 À venir
-	•	Historique des validations (audit)
-	•	Upload de justificatif (fichier)
-	•	Alertes sur dépassement de budget (logique métier)
+## 🧪 À venir
+
+- [ ] Historique des validations (audit)
+- [ ] Upload de justificatif (fichier)
+- [ ] Alertes sur dépassement de budget (logique métier)
