@@ -6,15 +6,24 @@ use Illuminate\Support\Facades\Auth;
 
 class Logout
 {
-    public function __invoke(): bool
+    public function __invoke($_, array $args)
     {
-        $user = Auth::user();
-        if ($user) {
-            $user->currentAccessToken()->delete();
-
-            return true;
+        // Vérification de l'authentification dans le resolver
+        if (! Auth::check()) {
+            throw new \Exception('Utilisateur non authentifié.');
         }
 
-        return false;
+        // Logout de l'utilisateur
+        $user = Auth::user();
+
+        // Si tu utilises Sanctum
+        if ($user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
+
+        // Logout standard
+        Auth::logout();
+
+        return true;
     }
 }
