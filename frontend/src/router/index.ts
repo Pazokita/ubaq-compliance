@@ -5,6 +5,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     redirect: '/dashboard'
   },
+  
   {
     path: '/login',
     name: 'Login',
@@ -18,6 +19,15 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/debug-events',
+    name: 'DebugEvents',
+    component: () => import('../pages/DebugEventsView.vue'),
+    meta: { 
+      requiresAuth: true,
+      title: 'Debug Événements'
+    }
+  },
+  {
     path: '/events',
     name: 'Events',
     component: () => import('../pages/EventsView.vue'),
@@ -28,6 +38,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'EventDetail',
     component: () => import('../pages/EventDetailView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/events/create',
+    name: 'event-create',
+    component: () => import('../pages/EventCreateView.vue'),
   },
   {
     path: '/doctors',
@@ -77,19 +92,14 @@ router.beforeEach((to, from, next) => {
     }
   }
   
-  // Handle navigation
   if (requiresAuth && !isAuthenticated) {
-    // Redirect to login if authentication is required but user is not authenticated
     next('/login');
   } else if (to.path === '/login' && isAuthenticated) {
-    // Redirect to dashboard if user is already authenticated and tries to access login page
     next('/dashboard');
   } else if (requiredRole && requiredRole !== userRole) {
-    // Redirect to dashboard if user doesn't have required role
     alert('Vous n\'avez pas les permissions nécessaires pour accéder à cette page');
     next('/dashboard');
   } else {
-    // Allow navigation
     next();
   }
 });
