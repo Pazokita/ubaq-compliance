@@ -284,7 +284,7 @@ import eventsService from '../services/events.service';
 
 const router = useRouter()
 
-// État du composant
+
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const doctors = ref<Doctor[]>([])
@@ -292,7 +292,6 @@ const laboratories = ref<Laboratory[]>([])
 const loadingDoctors = ref(false)
 const loadingLaboratories = ref(false)
 
-// Formulaire simple selon tes mutations
 const form = ref<CreateEventVariables>({
   title: '',
   date: '',
@@ -377,7 +376,6 @@ const goBack = () => {
   router.push('/events')
 }
 
-// Lifecycle
 onMounted(() => {
   loadDoctors()
   loadLaboratories()
