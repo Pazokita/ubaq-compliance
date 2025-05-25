@@ -45,6 +45,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/EventCreateView.vue'),
   },
   {
+    path: '/events/:id/edit',
+    name: 'EditEvent',
+    component: () => import('../pages/EditView.vue')
+  },
+  {
     path: '/doctors',
     name: 'Doctors',
     component: () => import('../pages/DoctorsView.vue'),
