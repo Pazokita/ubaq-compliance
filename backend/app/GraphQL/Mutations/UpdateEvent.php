@@ -14,24 +14,19 @@ class UpdateEvent
      */
     public function __invoke($_, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $user = Auth::user();
+        // $user = Auth::user();
 
-        if (! $user) {
-            throw new \Exception('Utilisateur non authentifié.');
-        }
+        // if (! $user) {
+        //     throw new \Exception('Utilisateur non authentifié.');
+        // }
 
         // Récupérer l'événement
         $event = Event::findOrFail($args['id']);
 
         // Vérifications de sécurité selon le rôle
-        if ($user->role === 'user' && $event->created_by !== $user->id) {
-            throw new \Exception('Vous n\'avez pas les droits pour modifier cet événement.');
-        }
-
-        // Vérifier si l'événement peut être modifié
-        if (! $event->canBeEdited() && $user->role !== 'admin') {
-            throw new \Exception('Cet événement ne peut plus être modifié dans son état actuel.');
-        }
+        // if ($user->role === 'user' && $event->created_by !== $user->id) {
+        //     throw new \Exception('Vous n\'avez pas les droits pour modifier cet événement.');
+        // }
 
         // Validation des données
         $input = $args['input'];

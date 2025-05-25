@@ -42,7 +42,7 @@ type Mutation {
     doctor_id: ID!
     laboratory_id: ID!
     document_url: String
-  ): Event! @create
+  ): Event! @field(resolver: "App\\GraphQL\\Mutations\\CreateEvent")
 
   updateEvent(
     id: ID!
