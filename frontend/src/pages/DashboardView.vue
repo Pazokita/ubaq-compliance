@@ -46,122 +46,92 @@
       </button>
     </div>
 
-    <!-- Event list -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="p-4 border-b bg-[#FDFBF9]">
-        <h2 class="font-semibold text-[#1A1A1A]">
-          {{ selectedStatus ? `Événements : ${getStatusLabel(selectedStatus)}` : 'Événements récents' }}
-        </h2>
-        <p class="text-sm text-gray-600 mt-1">
-          {{ filteredEvents.length }} événement(s) trouvé(s)
-        </p>
-      </div>
-
-      <!-- Loading state -->
-      <div v-if="loading" class="p-8 text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2C2C7B] mx-auto"></div>
-        <p class="mt-2 text-gray-600">Chargement des événements...</p>
-      </div>
-
-      <!-- Error state -->
-      <div v-else-if="error" class="p-8 text-center">
-        <div class="text-[#E63946] font-medium">{{ error }}</div>
-      </div>
-
-      <!-- Empty state -->
-      <div v-else-if="filteredEvents.length === 0" class="p-8 text-center">
-        <div class="text-gray-500">
-          <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    <!-- Events List Component -->
+    <EventsList
+      :events="filteredEvents"
+      :loading="loading"
+      :error="error"
+      :title="getListTitle()"
+      :empty-message="selectedStatus ? 'Aucun événement trouvé' : 'Aucun événement disponible'"
+      :empty-sub-message="getEmptySubMessage()"
+      :show-edit-action="false"
+      :show-delete-action="true"
+      @delete="openDeleteModal"
+      @retry="fetchEvents"
+    >
+      <template #actions>
+        <router-link
+          to="/events/create"
+          class="bg-[#2C2C7B] text-white px-4 py-2 rounded-md flex items-center text-sm hover:bg-[#6A7DFF] transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <p class="font-medium mb-2">
-            {{ selectedStatus ? 'Aucun événement trouvé' : 'Aucun événement disponible' }}
-          </p>
-          <p class="text-sm">
-            {{ selectedStatus 
-              ? `Il n'y a actuellement aucun événement avec le statut "${getStatusLabel(selectedStatus)}".` 
-              : 'Créez votre premier événement pour commencer.' 
-            }}
-          </p>
-        </div>
-      </div>
+          Nouvel événement
+        </router-link>
+      </template>
+      
+      <template #empty-actions>
+        <button 
+          v-if="selectedStatus"
+          @click="resetFilter"
+          class="text-[#2C2C7B] hover:text-[#6A7DFF] text-sm font-medium"
+        >
+          Effacer le filtre
+        </button>
+      </template>
+    </EventsList>
 
-      <!-- Events table -->
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead class="bg-gray-50">
-            <tr class="text-left text-sm text-gray-600">
-              <th class="px-4 py-3 font-medium">Titre</th>
-              <th class="px-4 py-3 font-medium">Type</th>
-              <th class="px-4 py-3 font-medium">Date</th>
-              <th class="px-4 py-3 font-medium">Lieu</th>
-              <th class="px-4 py-3 font-medium">Budget</th>
-              <th class="px-4 py-3 font-medium">Statut</th>
-              <th class="px-4 py-3 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr 
-              v-for="event in filteredEvents" 
-              :key="event.id" 
-              class="text-sm hover:bg-gray-50 transition-colors"
-            >
-              <td class="px-4 py-3">
-                <div class="font-medium text-[#1A1A1A]">{{ event.title }}</div>
-                <div class="text-xs text-gray-500 mt-1">
-                  Créé le {{ formatDate(event.created_at) }}
-                </div>
-              </td>
-              <td class="px-4 py-3 capitalize">{{ event.type }}</td>
-              <td class="px-4 py-3">{{ formatDate(event.date) }}</td>
-              <td class="px-4 py-3">{{ event.location }}</td>
-              <td class="px-4 py-3">
-                <div class="flex flex-col">
-                  <span class="font-medium">{{ event.budget_allocated }}€</span>
-                  <span class="text-xs text-gray-500">
-                    Utilisé: {{ event.budget_used }}€
-                  </span>
-                  <div 
-                    v-if="event.budget_used > 250" 
-                    class="text-xs text-[#E63946] font-medium mt-1"
-                  >
-                    ⚠️ Seuil dépassé
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3">
-                <span :class="`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(event.status)}`">
-                  {{ getStatusLabel(event.status) }}
-                </span>
-              </td>
-              <td class="px-4 py-3">
-                <router-link 
-                  :to="`/events/${event.id}`" 
-                  class="text-[#2C2C7B] hover:text-[#6A7DFF] font-medium hover:underline transition-colors"
-                >
-                  Voir détails →
-                </router-link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- Delete confirmation modal -->
+    <ConfirmDeleteModal
+      :is-open="deleteModal.isOpen"
+      :event-title="deleteModal.eventTitle"
+      :is-deleting="deleteModal.isDeleting"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
+
+    <!-- Notifications -->
+    <div class="fixed top-0 right-0 z-50 p-4 space-y-4">
+      <NotificationToast
+        v-for="notification in notificationService.notifications.value"
+        :key="notification.id"
+        :type="notification.type"
+        :title="notification.title"
+        :message="notification.message"
+        :duration="notification.duration"
+        :auto-close="notification.autoClose"
+        @close="notificationService.removeNotification(notification.id)"
+      />
     </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import MainLayout from '../components/MainLayout.vue';
+import { ref, onMounted, computed } from 'vue'
+import MainLayout from '../components/MainLayout.vue'
+import EventsList from '../components/EventsList.vue'
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal.vue'
+import NotificationToast from '../components/NotificationToast.vue'
 import { apolloClient } from '../lib/apollo'
 import { GET_EVENTS } from '../graphql/queries/events.queries'
+import { DELETE_EVENT } from '../graphql/mutations/events.mutations'
 import type { Event, GetEventsResponse } from '../graphql/queries/events.queries'
+import { notificationService } from '../services/notification.service'
 
 // États réactifs
 const allEvents = ref<Event[]>([])
 const selectedStatus = ref<string | null>(null)
 const loading = ref(false)
 const error = ref('')
+
+// Modal de suppression
+const deleteModal = ref({
+  isOpen: false,
+  eventId: '',
+  eventTitle: '',
+  isDeleting: false
+})
 
 // Configuration des statuts
 const statusList = [
@@ -173,42 +143,40 @@ const statusList = [
   { key: 'active', label: 'Événement en cours', bgClass: 'bg-green-100 text-green-800' }
 ]
 
-// Événements filtrés (computed property pour réactivité optimale)
+// Computed properties
 const filteredEvents = computed(() => {
   let events = [...allEvents.value]
   
-  // Filtrer par statut si sélectionné
   if (selectedStatus.value) {
     events = events.filter(event => event.status === selectedStatus.value)
   }
   
-  // Trier par date de création (plus récent en premier)
   return events.sort((a, b) => 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   )
 })
 
 // Fonctions utilitaires
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
-
 const getStatusLabel = (status: string) => {
   const statusConfig = statusList.find(s => s.key === status)
   return statusConfig?.label || status
 }
 
-const getStatusClass = (status: string) => {
-  const statusConfig = statusList.find(s => s.key === status)
-  return statusConfig?.bgClass || 'bg-gray-100 text-gray-800'
-}
-
 const getEventCountByStatus = (status: string) => {
   return allEvents.value.filter(event => event.status === status).length
+}
+
+const getListTitle = () => {
+  return selectedStatus.value 
+    ? `Événements : ${getStatusLabel(selectedStatus.value)}` 
+    : 'Événements récents'
+}
+
+const getEmptySubMessage = () => {
+  if (selectedStatus.value) {
+    return `Il n'y a actuellement aucun événement avec le statut "${getStatusLabel(selectedStatus.value)}".`
+  }
+  return 'Créez votre premier événement pour commencer.'
 }
 
 // Gestion des filtres
@@ -218,6 +186,56 @@ const toggleStatusFilter = (status: string) => {
 
 const resetFilter = () => {
   selectedStatus.value = null
+}
+
+// Gestion de la suppression
+const openDeleteModal = (event: Event) => {
+  deleteModal.value = {
+    isOpen: true,
+    eventId: event.id,
+    eventTitle: event.title,
+    isDeleting: false
+  }
+}
+
+const cancelDelete = () => {
+  deleteModal.value = {
+    isOpen: false,
+    eventId: '',
+    eventTitle: '',
+    isDeleting: false
+  }
+}
+
+const confirmDelete = async () => {
+  deleteModal.value.isDeleting = true
+  const eventTitle = deleteModal.value.eventTitle
+  
+  try {
+    await apolloClient.mutate({
+      mutation: DELETE_EVENT,
+      variables: { id: deleteModal.value.eventId }
+    })
+    
+    // Supprimer l'événement de la liste locale
+    allEvents.value = allEvents.value.filter(event => event.id !== deleteModal.value.eventId)
+    
+    cancelDelete()
+    
+    notificationService.success(
+      'Événement supprimé',
+      `L'événement "${eventTitle}" a été supprimé avec succès.`
+    )
+    
+  } catch (err: any) {
+    console.error('Erreur lors de la suppression:', err)
+    deleteModal.value.isDeleting = false
+    
+    notificationService.error(
+      'Erreur de suppression',
+      err.message || 'Une erreur est survenue lors de la suppression de l\'événement.'
+    )
+  }
 }
 
 // Récupération des données
