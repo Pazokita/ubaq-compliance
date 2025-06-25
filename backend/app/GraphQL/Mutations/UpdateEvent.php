@@ -28,18 +28,13 @@ class UpdateEvent
         //     throw new \Exception('Vous n\'avez pas les droits pour modifier cet événement.');
         // }
 
-        // Validation des données
         $input = $args['input'];
 
-        // Vérification du budget si nécessaire
         if (isset($input['budget_used']) && $input['budget_used'] > ($input['budget_allocated'] ?? $event->budget_allocated)) {
             throw new \Exception('Le budget utilisé ne peut pas dépasser le budget alloué.');
         }
 
-        // Mise à jour
         $event->update($input);
-
-        // Recharger les relations
         $event->load(['doctor', 'laboratory']);
 
         return $event;

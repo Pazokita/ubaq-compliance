@@ -20,15 +20,11 @@ class ValidateEvent
             throw new \Exception('Utilisateur non authentifié.');
         }
 
-        // Seuls les compliance officers et admins peuvent valider
         if (! in_array($user->role, ['compliance', 'admin'])) {
             throw new \Exception('Vous n\'avez pas les droits pour valider des événements.');
         }
-
-        // Récupérer l'événement
         $event = Event::findOrFail($args['id']);
 
-        // Vérifier si l'événement peut être validé
         if (! $event->canBeValidated()) {
             throw new \Exception('Cet événement ne peut pas être validé dans son état actuel.');
         }
@@ -53,13 +49,10 @@ class ValidateEvent
             default:
                 throw new \Exception('Action de validation non reconnue.');
         }
-
-        // Vérification du seuil budgétaire pour les compliance officers
         if ($user->role === 'compliance' && $event->exceedsBudgetThreshold() && $action === 'VALIDATE') {
             throw new \Exception('Le budget dépasse le seuil autorisé (250€). Validation admin requise.');
         }
 
-        // Mettre à jour le statut
         $event->update([
             'status' => $newStatus,
             'validation_comment' => $comment,
@@ -67,7 +60,6 @@ class ValidateEvent
             'validated_at' => now(),
         ]);
 
-        // Recharger les relations
         $event->load(['doctor', 'laboratory', 'validator']);
 
         return $event;

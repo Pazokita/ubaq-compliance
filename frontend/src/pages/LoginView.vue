@@ -2,7 +2,7 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
       <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-[#1A7350]">UBAQ Compliance</h2>
+        <h2 class="text-3xl font-bold text-[#1A7350]">Demo Conformité Médicale</h2>
         <p class="text-gray-600">Connectez-vous à votre compte</p>
       </div>
       
@@ -78,9 +78,9 @@ const password = ref('')
 
 // Mock user credentials pour les tests (fallback)
 const mockUsers = [
-  { email: 'admin@ubaq.com', password: 'admin123', role: 'admin', name: 'Admin User', id: 1 },
-  { email: 'compliance@ubaq.com', password: 'compliance123', role: 'compliance', name: 'Compliance Officer', id: 2 },
-  { email: 'user@ubaq.com', password: 'user123', role: 'user', name: 'Standard User', id: 3 }
+  { email: 'admin@test.com', password: 'admin123', role: 'admin', name: 'Admin User', id: 1 },
+  { email: 'compliance@test.com', password: 'compliance123', role: 'compliance', name: 'Compliance Officer', id: 2 },
+  { email: 'user@test.com', password: 'user123', role: 'user', name: 'Standard User', id: 3 }
 ]
 
 async function handleLogin() {

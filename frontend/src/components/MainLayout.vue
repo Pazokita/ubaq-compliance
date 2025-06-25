@@ -8,7 +8,7 @@
         <div class="flex items-center">
           <div class="text-sm">
             <div class="font-light">NAYACT</div>
-            <div class="font-bold">Transparency by <span class="text-[#8FDFC6]">UBAQ</span></div>
+            <div class="font-bold">Transparency by <span class="text-[#8FDFC6]">Demo</span></div>
           </div>
         </div>
         

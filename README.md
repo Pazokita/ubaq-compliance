@@ -1,8 +1,10 @@
-# 🩺 UBAQ Compliance – Gestion de conformité médicale
+# 🩺 Démo Conformité Médicale – Application Fullstack (Laravel + Vue)
+> ⚠️ Ce projet est une démonstration technique réalisée dans le cadre d’un entretien technique. Il s'agit d'une application fictive développée pour illustrer mes compétences en développement fullstack. Aucune donnée réelle n'est utilisée, et ce projet ne représente pas une entreprise réelle.
 
 ## 🎯 Objectif
 
-UBAQ Compliance est une application fullstack permettant de suivre les événements impliquant des professionnels de santé (colloques, dîners, formations). Elle assure le respect des plafonds budgétaires, des obligations légales, et des contraintes internes en matière de conformité.
+Cette application permet de suivre les événements impliquant des professionnels de santé (colloques, dîners, formations). Elle assure le respect des plafonds budgétaires, des obligations légales, et des contraintes internes en matière de conformité.
+
 
 ---
 

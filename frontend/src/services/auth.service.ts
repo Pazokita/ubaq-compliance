@@ -11,9 +11,9 @@ interface User {
 
 // Mock users pour les tests de rôles (en attendant l'ajout du champ role)
 const mockUsers = [
-  { email: 'admin@ubaq.com', password: 'admin123', role: 'admin', name: 'Admin User', id: 1 },
-  { email: 'compliance@ubaq.com', password: 'compliance123', role: 'compliance', name: 'Compliance Officer', id: 2 },
-  { email: 'user@ubaq.com', password: 'user123', role: 'user', name: 'Standard User', id: 3 }
+  { email: 'admin@test.com', password: 'admin123', role: 'admin', name: 'Admin User', id: 1 },
+  { email: 'compliance@test.com', password: 'compliance123', role: 'compliance', name: 'Compliance Officer', id: 2 },
+  { email: 'user@test.com', password: 'user123', role: 'user', name: 'Standard User', id: 3 }
 ]
 
 // État global pour l'authentification
